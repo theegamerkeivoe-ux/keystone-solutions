@@ -542,6 +542,17 @@ export const AdminDashboardPage: React.FC = () => {
           >
             Company & Contact Settings
           </button>
+          <button
+            onClick={() => setActiveTab('team')}
+            className={`px-4 py-2 rounded-sm font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'team'
+                ? 'bg-emerald-600 text-stone-950'
+                : 'bg-stone-900 text-stone-300 hover:text-white'
+            }`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>Admin Team & Invites ({adminUsers.length})</span>
+          </button>
         </div>
 
         {/* TAB 1: LEADS MANAGEMENT */}
@@ -1036,6 +1047,325 @@ export const AdminDashboardPage: React.FC = () => {
               </button>
             </div>
           </form>
+        )}
+
+        {/* TAB 7: ADMIN TEAM & INVITATION ACCESS */}
+        {activeTab === 'team' && (
+          <div className="space-y-8">
+            <div className="bg-[#11141A] border border-stone-800 rounded-lg p-6 sm:p-8 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-800 pb-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold mb-1">
+                    <ShieldCheck className="w-4 h-4" />
+                    Role-Based Access Control (RBAC)
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
+                    Admin Team & Access Management
+                  </h2>
+                  <p className="text-xs text-stone-400 mt-1 max-w-2xl">
+                    This backend is strictly private and hidden from the public. Only the founding owner (<span className="text-emerald-400 font-mono">{PRIMARY_SUPER_ADMIN_EMAIL}</span>) and team members you explicitly invite can log in.
+                  </p>
+                </div>
+              </div>
+
+              {/* Founding Owner Badge Card */}
+              <div className="p-4 bg-emerald-950/20 border border-emerald-700/40 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 text-stone-950 font-extrabold flex items-center justify-center text-sm shadow-md">
+                    👑
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-white">Founding Administrator (Primary Owner)</span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-stone-950">
+                        SUPER ADMIN
+                      </span>
+                    </div>
+                    <div className="text-xs font-mono text-emerald-400 mt-0.5">
+                      {PRIMARY_SUPER_ADMIN_EMAIL}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-[11px] text-stone-400 sm:text-right">
+                  <span className="text-emerald-400 font-semibold">Active Master Authority</span>
+                  <div className="text-stone-500">Only you can invite new admins</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Invite New Administrator Module */}
+            <div className="bg-[#11141A] border border-stone-800 rounded-lg p-6 sm:p-8 space-y-6">
+              <div className="border-b border-stone-800 pb-3 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <UserPlus className="w-4 h-4 text-emerald-400" />
+                    Invite Someone to Be an Admin
+                  </h3>
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    Generate an authorized invitation code and link for a colleague or partner.
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleCreateInvite} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div className="md:col-span-4">
+                  <label className="block text-xs uppercase font-mono text-stone-300 mb-1">
+                    New Admin Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="partner@keystonesolutions.co.ke"
+                    value={newAdminEmail}
+                    onChange={e => setNewAdminEmail(e.target.value)}
+                    className="w-full bg-stone-900 border border-stone-700 rounded px-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 font-mono"
+                  />
+                </div>
+
+                <div className="md:col-span-3">
+                  <label className="block text-xs uppercase font-mono text-stone-300 mb-1">
+                    Colleague Full Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. David Kimani"
+                    value={newAdminName}
+                    onChange={e => setNewAdminName(e.target.value)}
+                    className="w-full bg-stone-900 border border-stone-700 rounded px-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="md:col-span-3">
+                  <label className="block text-xs uppercase font-mono text-stone-300 mb-1">
+                    Assigned Role
+                  </label>
+                  <select
+                    value={newAdminRole}
+                    onChange={e => setNewAdminRole(e.target.value as AdminRole)}
+                    className="w-full bg-stone-900 border border-stone-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  >
+                    <option value="ADMIN">Operations Admin (Full CRM & CMS)</option>
+                    <option value="EDITOR">Content Editor (Portfolio & CMS)</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-2">
+                  <button
+                    type="submit"
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-bold text-xs uppercase tracking-wider py-2.5 rounded-sm transition-all cursor-pointer shadow-md flex items-center justify-center gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Generate Invite</span>
+                  </button>
+                </div>
+              </form>
+
+              {/* Newly Generated Invite Banner */}
+              {lastGeneratedInvite && (
+                <div className="bg-emerald-950/40 border border-emerald-600/60 rounded-lg p-5 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <CheckCircle className="w-4 h-4" />
+                      Invitation Ready for {lastGeneratedInvite.email}
+                    </span>
+                    <span className="text-[10px] text-stone-400 font-mono">
+                      Expires in 7 days
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 bg-stone-950 rounded border border-stone-800">
+                      <span className="text-[10px] text-stone-400 uppercase block mb-1">Invitation Code:</span>
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-emerald-300 font-bold text-sm tracking-wider">
+                          {lastGeneratedInvite.token}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(lastGeneratedInvite.token, 'token')}
+                          className="text-[11px] text-stone-300 hover:text-white bg-stone-800 hover:bg-stone-700 px-2.5 py-1 rounded cursor-pointer"
+                        >
+                          {copiedType === 'token' ? 'Copied!' : 'Copy Code'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-stone-950 rounded border border-stone-800">
+                      <span className="text-[10px] text-stone-400 uppercase block mb-1">Direct Activation Link:</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-stone-300 text-[11px] truncate">
+                          {window.location.origin + '?invite=' + lastGeneratedInvite.token}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(window.location.origin + '?invite=' + lastGeneratedInvite.token, 'link')}
+                          className="text-[11px] text-stone-300 hover:text-white bg-stone-800 hover:bg-stone-700 px-2.5 py-1 rounded shrink-0 cursor-pointer"
+                        >
+                          {copiedType === 'link' ? 'Copied!' : 'Copy Link'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const msg = `Hello! You have been invited by Keystone Solutions to join the private administration console. Please visit: ${window.location.origin}?invite=${lastGeneratedInvite.token} and use invitation code: ${lastGeneratedInvite.token} to set your password and activate your admin access.`;
+                        copyToClipboard(msg, 'message');
+                      }}
+                      className="text-xs text-stone-300 hover:text-white underline cursor-pointer"
+                    >
+                      {copiedType === 'message' ? '✓ Copied Message to Clipboard!' : 'Copy Formatted WhatsApp / Email Invitation Message'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* List of Authorized Administrators */}
+            <div className="bg-[#11141A] border border-stone-800 rounded-lg p-6 sm:p-8 space-y-4">
+              <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+                <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <Users className="w-4 h-4 text-emerald-400" />
+                  Authorized Administrative Accounts ({adminUsers.length})
+                </h3>
+              </div>
+
+              <div className="overflow-x-auto text-xs">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-stone-800 text-[10px] uppercase text-stone-400 font-mono">
+                      <th className="py-2.5 px-3">Administrator</th>
+                      <th className="py-2.5 px-3">Assigned Role</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3">Created / Invited</th>
+                      <th className="py-2.5 px-3">Last Active</th>
+                      <th className="py-2.5 px-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-800/60 text-stone-300">
+                    {adminUsers.map(user => {
+                      const isSuper = user.email.toLowerCase() === PRIMARY_SUPER_ADMIN_EMAIL.toLowerCase();
+                      return (
+                        <tr key={user.id} className="hover:bg-stone-900/50">
+                          <td className="py-3 px-3">
+                            <div className="flex items-center gap-2.5">
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[11px] ${
+                                isSuper ? 'bg-emerald-600 text-stone-950 font-extrabold' : 'bg-stone-800 text-stone-200'
+                              }`}>
+                                {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="font-bold text-white flex items-center gap-1.5">
+                                  <span>{user.name || user.email.split('@')[0]}</span>
+                                  {isSuper && <span className="text-[10px] text-amber-400">★ Owner</span>}
+                                </div>
+                                <div className="text-[11px] text-stone-400 font-mono">{user.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider font-mono border ${
+                              user.role === 'SUPER_ADMIN'
+                                ? 'bg-emerald-950 text-emerald-400 border-emerald-700'
+                                : user.role === 'ADMIN'
+                                ? 'bg-blue-950 text-blue-300 border-blue-800'
+                                : 'bg-purple-950 text-purple-300 border-purple-800'
+                            }`}>
+                              {user.role.replace('_', ' ')}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                              user.status === 'ACTIVE'
+                                ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800'
+                                : 'bg-amber-950/80 text-amber-400 border border-amber-800'
+                            }`}>
+                              {user.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-stone-400 text-[11px]">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-3 text-stone-400 text-[11px]">
+                            {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : 'Never'}
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            {isSuper ? (
+                              <span className="text-[10px] text-stone-500 uppercase font-mono">Protected</span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  removeAdminUser(user.id);
+                                }}
+                                className="text-red-400 hover:text-red-300 hover:underline text-[11px] cursor-pointer"
+                              >
+                                Remove Access
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Pending Invitations Table */}
+            {adminInvites.filter(i => i.status === 'PENDING').length > 0 && (
+              <div className="bg-[#11141A] border border-stone-800 rounded-lg p-6 sm:p-8 space-y-4">
+                <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+                  <h3 className="text-base font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    Pending Admin Invitations ({adminInvites.filter(i => i.status === 'PENDING').length})
+                  </h3>
+                </div>
+
+                <div className="overflow-x-auto text-xs">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-stone-800 text-[10px] uppercase text-stone-400 font-mono">
+                        <th className="py-2 px-3">Invited Email</th>
+                        <th className="py-2 px-3">Role</th>
+                        <th className="py-2 px-3">Invite Code</th>
+                        <th className="py-2 px-3">Expires</th>
+                        <th className="py-2 px-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-800/60 text-stone-300">
+                      {adminInvites.filter(i => i.status === 'PENDING').map(inv => (
+                        <tr key={inv.id}>
+                          <td className="py-2.5 px-3 font-mono text-white">{inv.email}</td>
+                          <td className="py-2.5 px-3">{inv.role}</td>
+                          <td className="py-2.5 px-3 font-mono text-emerald-400 font-bold">{inv.token}</td>
+                          <td className="py-2.5 px-3 text-stone-400 text-[11px]">{new Date(inv.expiresAt).toLocaleDateString()}</td>
+                          <td className="py-2.5 px-3 text-right space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(inv.token, 'token')}
+                              className="text-stone-300 hover:text-white underline text-[11px] cursor-pointer"
+                            >
+                              Copy Code
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => revokeInvite(inv.id)}
+                              className="text-red-400 hover:text-red-300 underline text-[11px] cursor-pointer"
+                            >
+                              Revoke
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
